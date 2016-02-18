@@ -13,7 +13,7 @@ import mandelbrot.WritableGrid;
  *
  * @author Tom
  */
-public class MouseHandler implements EventHandler<MouseEvent> {
+public class MouseHandler implements EventHandler<MouseEvent>{
 
     /**
      *
@@ -55,7 +55,6 @@ public class MouseHandler implements EventHandler<MouseEvent> {
 
     @Override
     public void handle(MouseEvent event) {
-
         if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
             mouseXInitial = event.getSceneX();
             mouseYInitial = event.getSceneY();

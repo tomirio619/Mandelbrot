@@ -1,18 +1,34 @@
 package view;
 
+import controller.ActionEventHandler;
 import java.util.Observable;
 import java.util.Observer;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import worker.Job;
 import controller.MouseHandler;
+import static java.lang.String.format;
+import java.text.ParsePosition;
+import java.util.function.UnaryOperator;
+import static javafx.beans.binding.Bindings.format;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.util.StringConverter;
+import mandelbrot.Point;
 import mandelbrot.WritableGrid;
+import static java.lang.String.format;
+import static javafx.beans.binding.Bindings.format;
 
 /**
  *
@@ -54,8 +70,9 @@ public class View implements Observer {
      *
      * The AnchorPane
      */
-    static protected final AnchorPane root = new AnchorPane();
+    static protected final BorderPane borderPane = new BorderPane();
 
+    
     /**
      *
      * The Stage
@@ -71,20 +88,97 @@ public class View implements Observer {
      */
     public View(Stage stage, WritableGrid grid, int width, int height) {
         primaryStage = stage;
-
         this.grid = grid;
-        scene = new Scene(root, width, height);
+        
         vbox = new VBox();
+        scene = new Scene(borderPane);
         image = new ImageView();
-
-        image.setImage(grid.grid);
-        vbox.autosize();
-        vbox.getChildren().add(image);
-        root.getChildren().add(vbox);
-
         mhandler = new MouseHandler(grid);
-        scene.addEventHandler(MouseEvent.ANY, mhandler);
+        
+        /* set up the view which contains the representation of the mandelbrot 
+        set
+        */
+        image.setImage(grid.grid);
+        borderPane.setCenter(image);
+        image.addEventHandler(MouseEvent.ANY, mhandler);
 
+        /*
+        Create the button, labels, fields and progress bar
+        restrict input:
+        http://stackoverflow.com/questions/11093326/restricting-jtextfield-input-to-integers
+        JFormattedTextField
+        */
+        Label nrOfThreadsLabel = new Label("Threads:");
+        Label maxIterationsLabel = new Label("Max iterations:");
+        Label coordinatesLabel = new Label("Coordinates");
+        Label xCoordinateLabel = new Label("x:");
+        Label yCoordinateLabel = new Label("y:");
+        Label blockSizeLabel = new Label("Blocksize:");
+        
+        TextField nrOfThreatsField = new TextField();
+        TextField blockSizeField = new TextField();
+        TextField maxIterationsField = new TextField();
+        TextField xCoordinateField = new TextField();
+        TextField yCoordinateField = new TextField();
+        
+        ProgressBar progressBar = new ProgressBar(0.0);
+        Button zoomButton = new Button("Zoom");
+        zoomButton.setId("zoomButton");
+        zoomButton.setOnAction(new ActionEventHandler(grid));
+        
+        /*
+        Add labels, textfields and progressbar to gridlayout
+        */
+        GridPane gridPane = new GridPane();
+        gridPane.addRow(0, nrOfThreadsLabel, nrOfThreatsField);
+        gridPane.addRow(1, maxIterationsLabel, maxIterationsField);
+        gridPane.addRow(2, blockSizeLabel, blockSizeField);
+        gridPane.addRow(3, coordinatesLabel);
+        gridPane.addRow(4, xCoordinateLabel, xCoordinateField);
+        gridPane.addRow(5, yCoordinateLabel, yCoordinateField);
+        gridPane.addRow(6, zoomButton, progressBar);
+        vbox.getChildren().addAll(gridPane);
+        BorderPane.setMargin(vbox, new Insets(12,12,12,12));
+        borderPane.setRight(vbox);
+        
+        /*
+       http://stackoverflow.com/questions/31039449/java-8-u40-textformatter-javafx-to-restrict-user-input-only-for-decimal-number
+       http://www.javaworld.com/article/2991463/core-java/javafx-improvements-in-java-se-8u40.html?page=4
+        Create formatters and filters
+        */
+        StringConverter<Integer> formatter;
+        formatter = new StringConverter<Integer>()        {
+            @Override
+            public String toString(Integer object) {
+                return object.toString();
+            }
+
+            @Override
+            public Integer fromString(String string) {
+                System.out.println("fromString(): string = " + string);
+                        return Integer.parseInt(string);
+            }
+            
+        };
+        
+        UnaryOperator<TextFormatter.Change> filter;
+        filter = new UnaryOperator<TextFormatter.Change>(){
+            @Override
+            public TextFormatter.Change apply(TextFormatter.Change t) {
+                System.out.println(t);
+                String text = t.getText();
+                for (int i = 0; i< text.length(); i++){
+                    if (!Character.isDigit(text.charAt(i))){
+                        return null;
+                    }
+                }
+                return t;
+            }
+            
+        };
+        maxIterationsField.setTextFormatter(new TextFormatter<>(formatter, Point.maxIter, filter));
+        
+        
         primaryStage.setTitle("Mandelbrot");
         primaryStage.centerOnScreen();
         primaryStage.setResizable(false);
@@ -98,7 +192,7 @@ public class View implements Observer {
      * @param r The rectangle that has to be drawn on the screen
      */
     public static void drawSelection(Rectangle r) {
-        root.getChildren().add(r);
+        borderPane.getChildren().add(r);
     }
 
     /**
@@ -106,7 +200,7 @@ public class View implements Observer {
      * @param r The rectangle that has to be remove from the screen
      */
     public static void removeSelection(Rectangle r) {
-        root.getChildren().remove(r);
+        borderPane.getChildren().remove(r);
     }
 
     /**

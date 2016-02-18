@@ -40,7 +40,7 @@ public class Point {
      * 9500. Extra heap space must be assigned: Project properties -> Run -> VM
      * Options Enter "-Xms512m" as argument (without quotes).
      */
-    private static final int maxiter = 5000;
+    public static int maxIter = 6000;
 
     /**
      *
@@ -60,7 +60,7 @@ public class Point {
      */
     public int getMandelValue() {
         if (isInCardioid() || isInBulb2()) {
-            return maxiter;
+            return maxIter;
         } else {
             return mandelValue(a, b, 0);
         }
@@ -78,8 +78,8 @@ public class Point {
         double y2 = y * y;
         if (x2 + y2 > 4.0) {
             return counter;
-        } else if (counter >= maxiter) {
-            return maxiter;
+        } else if (counter >= maxIter) {
+            return maxIter;
         } else {
             xn = x2 - y2 + a;
             yn = 2.0 * x * y + b;
@@ -111,12 +111,12 @@ public class Point {
 
     /**
      *
-     * @return Smooth colouring by applying berstein Polynomials to get the
+     * @return Smooth colouring by applying Berstein Polynomials to get the
      * color responding to the point's mandelvalue
      */
     public Color bersteinColouring() {
         int mandelValue = getMandelValue();
-        double t = (double) mandelValue / (double) maxiter;
+        double t = (double) mandelValue / (double) maxIter;
         int red = (int) (9.0 * (1 - t) * t * t * t * 255.0);
         int green = (int) (15.0 * (1 - t) * (1 - t) * t * t * 255.0);
         int blue = (int) (8.5 * (1 - t) * (1 - t) * (1 - t) * t * 255.0);
@@ -138,7 +138,7 @@ public class Point {
     public double getY() {
         return b;
     }
-
+    
     /**
      *
      * @return String for this class
