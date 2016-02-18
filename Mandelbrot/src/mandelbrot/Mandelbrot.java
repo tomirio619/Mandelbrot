@@ -14,14 +14,14 @@ public class Mandelbrot extends Application {
     public void start(Stage primaryStage) {
         /**
          *
-         * The width of the screen, chunkSIZE in queue must be a devisior of
+         * The width of the screen, chunkSIZE in queue must be a divisor of
          * this value.
          */
         int width = 800;
 
         /**
          *
-         * The height of the screen, chunkSIZE in queue must be a devisior of
+         * The height of the screen, chunkSIZE in queue must be a divisor of
          * this value
          */
         int height = 800;
