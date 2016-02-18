@@ -38,8 +38,7 @@ public class Point {
      *
      * The maximum number of iterations The maximum number of iterations is
      * 9500. Extra heap space must be assigned: Project properties -> Run -> VM
-     * Options Enter "-Xmx512m" as argument (without quotes) Stack Overflow
-     * errors will occur when a higher value is chosen
+     * Options Enter "-Xms512m" as argument (without quotes).
      */
     private static final int maxiter = 5000;
 
