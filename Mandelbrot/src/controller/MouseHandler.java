@@ -23,13 +23,13 @@ public class MouseHandler implements EventHandler<MouseEvent> {
 
     /**
      *
-     * The inital x coordinate of the mouse when the mouse started dragging
+     * The initial x coordinate of the mouse when the mouse started dragging
      */
     private double mouseXInitial;
 
     /**
      *
-     * The inital y coordinate of the mouse when the mouse started dragging
+     * The initial y coordinate of the mouse when the mouse started dragging
      */
     private double mouseYInitial;
 
