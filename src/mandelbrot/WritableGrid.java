@@ -43,7 +43,10 @@ public final class WritableGrid extends Observable {
      * The scale that is currently being used
      */
     public int scalefactor = 124;
-    
+
+    /**
+     * Completed jobs so far
+     */
     public static int completedJobs = 0;
 
     /**
@@ -56,7 +59,8 @@ public final class WritableGrid extends Observable {
      *
      * The maximum number of threads
      */
-    public static final int MAX_NR_OF_THREADS = Runtime.getRuntime().availableProcessors();;
+    public static final int MAX_NR_OF_THREADS = Runtime.getRuntime().availableProcessors();
+    ;
 
     /**
      *
@@ -98,12 +102,12 @@ public final class WritableGrid extends Observable {
                     try {
                         Future<Job> result = service.take();
                         Job j = result.get();
-                        Platform.runLater(new Runnable(){
+                        Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
                                 paintJob(j);
                             }
-                            
+
                         });
                         completedJobs++;
                     } catch (InterruptedException ex) {
@@ -119,10 +123,10 @@ public final class WritableGrid extends Observable {
         completedJobs = 0;
     }
 
-
     /**
      * Notifies the View that this job can be painted to the screen.
      *
+     * @param j the job
      */
     public void paintJob(Job j) {
         setChanged();

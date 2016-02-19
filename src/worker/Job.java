@@ -143,10 +143,19 @@ public class Job implements Callable<Job> {
         return results[width][height];
     }
 
+    /**
+     *
+     * @return the queue
+     */
     public Queue getQueue() {
         return queue;
     }
 
+    /**
+     *
+     * @return the job
+     * @throws Exception
+     */
     @Override
     public Job call() throws Exception {
         doJob();

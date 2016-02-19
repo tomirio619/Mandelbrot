@@ -83,18 +83,27 @@ public class View implements Observer {
     private final Stage primaryStage;
 
     private Label nrOfThreadsLabel;
+
     private Label maxIterationsLabel;
+
     private Label coordinatesLabel;
+
     private Label xCoordinateLabel;
+
     private Label yCoordinateLabel;
+
     private Label blockSizeLabel;
 
     private TextField nrOfThreadsField;
+
     private TextField blockSizeField;
+
     private TextField maxIterationsField;
+
     private TextField xCoordinateField;
+
     private TextField yCoordinateField;
-    
+
     private Button zoomButton;
 
     /**
@@ -146,17 +155,16 @@ public class View implements Observer {
 
         /*
         Set Id's
-        */
+         */
         nrOfThreadsField.setId("nrOfThreatsField");
         nrOfThreadsField.setDisable(true);
         maxIterationsField.setId("maxIterationsField");
         blockSizeField.setId("blockSizeField");
         xCoordinateField.setId("xCoordinateField");
         yCoordinateField.setId("yCoordinateField");
-        
+
         System.out.println("De tostring van nrOfThreatsField is " + nrOfThreadsField);
-        
-        
+
         /*
         Add labels, textfields and progressbar to gridlayout
          */
@@ -211,15 +219,12 @@ public class View implements Observer {
         maxIterationsField.setTextFormatter(new TextFormatter<>(formatter, Point.maxIter, filter));
         blockSizeField.setTextFormatter(new TextFormatter<>(formatter, Queue.chunkSIZE, filter));
         nrOfThreadsField.setText(Integer.toString(WritableGrid.MAX_NR_OF_THREADS));
-        
-        
 
         /*
         Verify values on focusloss
         http://www.java2s.com/Code/Java/Event/ValidatingaJTextFieldWhenPermanentlyLosingtheFocus.htm
          */
         //maxIterationsField;
-
         primaryStage.setTitle("Mandelbrot");
         primaryStage.centerOnScreen();
         primaryStage.setResizable(false);

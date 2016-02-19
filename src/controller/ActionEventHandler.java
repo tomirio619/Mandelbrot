@@ -18,6 +18,10 @@ public class ActionEventHandler implements EventHandler<ActionEvent> {
 
     private WritableGrid grid;
 
+    /**
+     *
+     * @param grid the grid
+     */
     public ActionEventHandler(WritableGrid grid) {
         this.grid = grid;
 
