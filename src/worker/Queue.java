@@ -11,7 +11,7 @@ import mandelbrot.WritableGrid;
  *
  * @author Tom
  */
-public class Queue{
+public class Queue {
 
     /**
      *
@@ -23,7 +23,7 @@ public class Queue{
      *
      * Contains jobs that have to be calculated
      */
-    private final ArrayList <Job> queue;
+    private final ArrayList<Job> queue;
 
     /**
      *
@@ -38,11 +38,11 @@ public class Queue{
     public static final int chunkSIZE = 5;
 
     /**
-     * 
+     *
      * The list iterator for the queue
      */
     public final Iterator<Job> iterator;
-    
+
     /**
      *
      * The width of the grid
@@ -56,10 +56,11 @@ public class Queue{
     private final int gridH;
 
     /**
-     * 
+     *
      * The grid
      */
     private final WritableGrid grid;
+
     /**
      *
      * @param coordinates All the points from the grid that have to be
@@ -71,7 +72,7 @@ public class Queue{
     public Queue(Point[][] coordinates, int gridW, int gridH, WritableGrid grid) {
         this.grid = grid;
         this.coordinates = coordinates;
-        queue = new ArrayList <>();
+        queue = new ArrayList<>();
         this.gridW = gridW;
         this.gridH = gridH;
         makeJobs();
@@ -90,16 +91,12 @@ public class Queue{
             }
         }
     }
-    
+
     /**
      * @return The total number of jobs created
      */
-    public int getTotalJobs(){
+    public int getTotalJobs() {
         return totalJobs;
     }
-    
-    
+
 }
-
-   
-

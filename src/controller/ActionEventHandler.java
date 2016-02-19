@@ -14,22 +14,22 @@ import mandelbrot.WritableGrid;
  *
  * @author Tomirio
  */
-public class ActionEventHandler implements EventHandler<ActionEvent>{
+public class ActionEventHandler implements EventHandler<ActionEvent> {
 
     private WritableGrid grid;
-    
-    public ActionEventHandler(WritableGrid grid){
+
+    public ActionEventHandler(WritableGrid grid) {
         this.grid = grid;
-        
+
     }
-    
+
     @Override
     public void handle(ActionEvent event) {
         Button b = (Button) event.getSource();
-        if (b.getId() == "zoomButton"){
+        if (b.getId() == "zoomButton") {
             System.out.println("Er werd op de zoom knop gedrukt!");
-            
+
         }
     }
-    
+
 }

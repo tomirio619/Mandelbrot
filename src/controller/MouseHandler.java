@@ -14,7 +14,7 @@ import static java.lang.Math.abs;
  *
  * @author Tom
  */
-public class MouseHandler implements EventHandler<MouseEvent>{
+public class MouseHandler implements EventHandler<MouseEvent> {
 
     /**
      *

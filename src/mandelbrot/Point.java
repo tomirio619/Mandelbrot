@@ -138,7 +138,7 @@ public class Point {
     public double getY() {
         return b;
     }
-    
+
     /**
      *
      * @return String for this class

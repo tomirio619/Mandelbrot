@@ -14,8 +14,8 @@ public class Mandelbrot extends Application {
     public void start(Stage primaryStage) {
         /**
          *
-         * The width of the screen, chunkSIZE in queue must be a divisor of
-         * this value.
+         * The width of the screen, chunkSIZE in queue must be a divisor of this
+         * value.
          */
         int width = 1000;
 

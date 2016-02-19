@@ -142,8 +142,8 @@ public class Job implements Callable<Job> {
     public Color getResult(int width, int height) {
         return results[width][height];
     }
-    
-    public Queue getQueue(){
+
+    public Queue getQueue() {
         return queue;
     }
 

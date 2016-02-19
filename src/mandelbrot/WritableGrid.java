@@ -9,10 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 
 /**
  *
@@ -79,33 +77,38 @@ public final class WritableGrid extends Observable {
     /**
      * http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ExecutorCompletionService.html
      * http://stackoverflow.com/questions/4912228/when-should-i-use-a-completionservice-over-an-executorservice
+     * http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
      */
     public void startThreads() {
         Queue queue = new Queue(coordinates, gridW, gridH, this);
         ExecutorService pool = Executors.newFixedThreadPool(MAX_NR_OF_THREADS);
         ExecutorCompletionService service = new ExecutorCompletionService(pool);
-        
-        while(queue.iterator.hasNext()){
+
+        while (queue.iterator.hasNext()) {
             service.submit(queue.iterator.next());
         }
-        for (int i = 0; i<queue.getTotalJobs(); i++){
-            try {
-                Future<Job> result = service.take();
-                Job j = result.get();
-                //We moeten nog een apart thread maken die de resultaten naar het scherm paint
-                paintJob(j);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(WritableGrid.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ExecutionException ex) {
-                Logger.getLogger(WritableGrid.class.getName()).log(Level.SEVERE, null, ex);
+        pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < queue.getTotalJobs(); i++) {
+                    try {
+                        Future<Job> result = service.take();
+                        Job j = result.get();
+                        paintJob(j);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(WritableGrid.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (ExecutionException ex) {
+                        Logger.getLogger(WritableGrid.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
-        }
+        });
+
     }
 
     /**
      * Notifies the View that this job can be painted to the screen.
      *
-     * @param results
      */
     public void paintJob(Job j) {
         setChanged();
