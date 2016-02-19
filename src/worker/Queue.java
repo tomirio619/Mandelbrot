@@ -2,8 +2,6 @@ package worker;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorCompletionService;
 import mandelbrot.Point;
 import mandelbrot.WritableGrid;
 

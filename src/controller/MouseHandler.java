@@ -1,7 +1,6 @@
 package controller;
 
 import view.View;
-import static java.lang.Math.abs;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
