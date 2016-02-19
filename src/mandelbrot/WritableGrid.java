@@ -9,6 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
@@ -41,6 +43,8 @@ public final class WritableGrid extends Observable {
      * The scale that is currently being used
      */
     public int scalefactor = 124;
+    
+    public static int completedJobs = 0;
 
     /**
      *
@@ -52,7 +56,7 @@ public final class WritableGrid extends Observable {
      *
      * The maximum number of threads
      */
-    private final int MAX_NR_OF_THREADS;
+    public static final int MAX_NR_OF_THREADS = Runtime.getRuntime().availableProcessors();;
 
     /**
      *
@@ -71,13 +75,13 @@ public final class WritableGrid extends Observable {
         this.gridH = height;
         this.writer = grid.getPixelWriter();
         coordinates = new Point[width][height];
-        MAX_NR_OF_THREADS = Runtime.getRuntime().availableProcessors();
     }
 
     /**
      * http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ExecutorCompletionService.html
      * http://stackoverflow.com/questions/4912228/when-should-i-use-a-completionservice-over-an-executorservice
      * http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
+     * http://java-buddy.blogspot.nl/2013/01/implement-javafxconcurrenttask-to-draw.html
      */
     public void startThreads() {
         Queue queue = new Queue(coordinates, gridW, gridH, this);
@@ -87,24 +91,34 @@ public final class WritableGrid extends Observable {
         while (queue.iterator.hasNext()) {
             service.submit(queue.iterator.next());
         }
-        pool.execute(new Runnable() {
+        pool.execute(new Task<Void>() {
             @Override
-            public void run() {
+            public Void call() {
                 for (int i = 0; i < queue.getTotalJobs(); i++) {
                     try {
                         Future<Job> result = service.take();
                         Job j = result.get();
-                        paintJob(j);
+                        Platform.runLater(new Runnable(){
+                            @Override
+                            public void run() {
+                                paintJob(j);
+                            }
+                            
+                        });
+                        completedJobs++;
                     } catch (InterruptedException ex) {
                         Logger.getLogger(WritableGrid.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (ExecutionException ex) {
                         Logger.getLogger(WritableGrid.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
+                return null;
             }
         });
-
+        pool.shutdown();
+        completedJobs = 0;
     }
+
 
     /**
      * Notifies the View that this job can be painted to the screen.

@@ -24,6 +24,7 @@ import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 import mandelbrot.Point;
 import mandelbrot.WritableGrid;
+import worker.Queue;
 
 /**
  *
@@ -71,13 +72,30 @@ public class View implements Observer {
      *
      * The AnchorPane
      */
-    static protected final BorderPane borderPane = new BorderPane();
+    private static BorderPane borderPane;
+
+    private GridPane gridPane;
 
     /**
      *
      * The Stage
      */
     private final Stage primaryStage;
+
+    private Label nrOfThreadsLabel;
+    private Label maxIterationsLabel;
+    private Label coordinatesLabel;
+    private Label xCoordinateLabel;
+    private Label yCoordinateLabel;
+    private Label blockSizeLabel;
+
+    private TextField nrOfThreadsField;
+    private TextField blockSizeField;
+    private TextField maxIterationsField;
+    private TextField xCoordinateField;
+    private TextField yCoordinateField;
+    
+    private Button zoomButton;
 
     /**
      *
@@ -90,6 +108,7 @@ public class View implements Observer {
         primaryStage = stage;
         this.grid = grid;
 
+        borderPane = new BorderPane();
         vbox = new VBox();
         scene = new Scene(borderPane);
         image = new ImageView();
@@ -108,28 +127,41 @@ public class View implements Observer {
         http://stackoverflow.com/questions/11093326/restricting-jtextfield-input-to-integers
         JFormattedTextField
          */
-        Label nrOfThreadsLabel = new Label("Threads:");
-        Label maxIterationsLabel = new Label("Max iterations:");
-        Label coordinatesLabel = new Label("Coordinates");
-        Label xCoordinateLabel = new Label("x:");
-        Label yCoordinateLabel = new Label("y:");
-        Label blockSizeLabel = new Label("Blocksize:");
+        nrOfThreadsLabel = new Label("Threads:");
+        maxIterationsLabel = new Label("Max iterations:");
+        coordinatesLabel = new Label("Coordinates");
+        xCoordinateLabel = new Label("x:");
+        yCoordinateLabel = new Label("y:");
+        blockSizeLabel = new Label("Blocksize:");
 
-        TextField nrOfThreatsField = new TextField();
-        TextField blockSizeField = new TextField();
-        TextField maxIterationsField = new TextField();
-        TextField xCoordinateField = new TextField();
-        TextField yCoordinateField = new TextField();
+        nrOfThreadsField = new TextField();
+        blockSizeField = new TextField();
+        maxIterationsField = new TextField();
+        xCoordinateField = new TextField();
+        yCoordinateField = new TextField();
 
-        Button zoomButton = new Button("Zoom");
+        zoomButton = new Button("Zoom");
         zoomButton.setId("zoomButton");
         zoomButton.setOnAction(new ActionEventHandler(grid));
 
         /*
+        Set Id's
+        */
+        nrOfThreadsField.setId("nrOfThreatsField");
+        nrOfThreadsField.setDisable(true);
+        maxIterationsField.setId("maxIterationsField");
+        blockSizeField.setId("blockSizeField");
+        xCoordinateField.setId("xCoordinateField");
+        yCoordinateField.setId("yCoordinateField");
+        
+        System.out.println("De tostring van nrOfThreatsField is " + nrOfThreadsField);
+        
+        
+        /*
         Add labels, textfields and progressbar to gridlayout
          */
-        GridPane gridPane = new GridPane();
-        gridPane.addRow(0, nrOfThreadsLabel, nrOfThreatsField);
+        gridPane = new GridPane();
+        gridPane.addRow(0, nrOfThreadsLabel, nrOfThreadsField);
         gridPane.addRow(1, maxIterationsLabel, maxIterationsField);
         gridPane.addRow(2, blockSizeLabel, blockSizeField);
         gridPane.addRow(3, coordinatesLabel);
@@ -175,7 +207,18 @@ public class View implements Observer {
             }
 
         };
+
         maxIterationsField.setTextFormatter(new TextFormatter<>(formatter, Point.maxIter, filter));
+        blockSizeField.setTextFormatter(new TextFormatter<>(formatter, Queue.chunkSIZE, filter));
+        nrOfThreadsField.setText(Integer.toString(WritableGrid.MAX_NR_OF_THREADS));
+        
+        
+
+        /*
+        Verify values on focusloss
+        http://www.java2s.com/Code/Java/Event/ValidatingaJTextFieldWhenPermanentlyLosingtheFocus.htm
+         */
+        //maxIterationsField;
 
         primaryStage.setTitle("Mandelbrot");
         primaryStage.centerOnScreen();
@@ -235,9 +278,11 @@ public class View implements Observer {
     public void update(Observable o, Object arg) {
         Job j = (Job) arg;
         paint(j);
+        double totalJobs = j.getQueue().getTotalJobs();
+        double completedJobs = WritableGrid.completedJobs;
         //System.out.println("Total jobs: " + totalJobs);
         //System.out.println("Completed jobs:" + completedJobs);
-        //progressBar.setProgress(completedJobs/totalJobs);
+        progressBar.setProgress(completedJobs / totalJobs);
     }
 
     /**
