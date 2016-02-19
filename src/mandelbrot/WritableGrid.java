@@ -45,11 +45,6 @@ public final class WritableGrid extends Observable {
     public int scalefactor = 124;
 
     /**
-     * Completed jobs so far
-     */
-    public static int completedJobs = 0;
-
-    /**
      *
      * All the points that are in the grid
      */
@@ -105,11 +100,11 @@ public final class WritableGrid extends Observable {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
+                                j.getQueue().incrementCompletedJobs();
                                 paintJob(j);
                             }
 
                         });
-                        completedJobs++;
                     } catch (InterruptedException ex) {
                         Logger.getLogger(WritableGrid.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (ExecutionException ex) {
@@ -120,7 +115,6 @@ public final class WritableGrid extends Observable {
             }
         });
         pool.shutdown();
-        completedJobs = 0;
     }
 
     /**

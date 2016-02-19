@@ -58,6 +58,11 @@ public class Queue {
      * The grid
      */
     private final WritableGrid grid;
+    
+    /**
+     * Completed jobs so far
+     */
+    public static int completedJobs = 0;
 
     /**
      *
@@ -85,9 +90,9 @@ public class Queue {
             for (int height = 0; height <= gridH - chunkSIZE; height += chunkSIZE) {
                 Job job = new Job(width, height, new Point[chunkSIZE][chunkSIZE], chunkSIZE, chunkSIZE, this);
                 queue.add(job);
-                totalJobs++;
             }
         }
+        totalJobs=queue.size();
     }
 
     /**
@@ -95,6 +100,18 @@ public class Queue {
      */
     public int getTotalJobs() {
         return totalJobs;
+    }
+    
+    public int getCompletedJobs(){
+        return completedJobs;
+    }
+    
+    public void resetCompletedJobs(){
+        completedJobs = 0;
+    }
+    
+    public synchronized void incrementCompletedJobs(){
+        completedJobs++;
     }
 
 }

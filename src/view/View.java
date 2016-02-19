@@ -32,6 +32,7 @@ import worker.Queue;
  */
 public class View implements Observer {
 
+    static int counter = 0;
     /**
      *
      * The MouseHandler
@@ -126,6 +127,7 @@ public class View implements Observer {
         /* set up the view which contains the representation of the mandelbrot 
         set
          */
+        BorderPane.setMargin(image, new Insets(12, 12, 12, 12));
         image.setImage(grid.grid);
         borderPane.setCenter(image);
         image.addEventHandler(MouseEvent.ANY, mhandler);
@@ -163,8 +165,15 @@ public class View implements Observer {
         xCoordinateField.setId("xCoordinateField");
         yCoordinateField.setId("yCoordinateField");
 
-        System.out.println("De tostring van nrOfThreatsField is " + nrOfThreadsField);
-
+        /*
+        Set text colour in labels to white
+         */
+        nrOfThreadsLabel.setStyle("-fx-text-fill: white;");
+        maxIterationsLabel.setStyle("-fx-text-fill: white;");
+        coordinatesLabel.setStyle("-fx-text-fill: white;");
+        xCoordinateLabel.setStyle("-fx-text-fill: white;");
+        yCoordinateLabel.setStyle("-fx-text-fill: white;");
+        blockSizeLabel.setStyle("-fx-text-fill: white;");
         /*
         Add labels, textfields and progressbar to gridlayout
          */
@@ -176,6 +185,7 @@ public class View implements Observer {
         gridPane.addRow(4, xCoordinateLabel, xCoordinateField);
         gridPane.addRow(5, yCoordinateLabel, yCoordinateField);
         gridPane.addRow(6, zoomButton, progressBar);
+        progressBar.setMaxWidth(Double.MAX_VALUE);
         vbox.getChildren().addAll(gridPane);
         BorderPane.setMargin(vbox, new Insets(12, 12, 12, 12));
         borderPane.setRight(vbox);
@@ -225,6 +235,11 @@ public class View implements Observer {
         http://www.java2s.com/Code/Java/Event/ValidatingaJTextFieldWhenPermanentlyLosingtheFocus.htm
          */
         //maxIterationsField;
+        /*
+        Set style of borderpane
+         */
+        borderPane.setStyle("-fx-background-color: #2B2B2B;");
+
         primaryStage.setTitle("Mandelbrot");
         primaryStage.centerOnScreen();
         primaryStage.setResizable(false);
@@ -281,13 +296,26 @@ public class View implements Observer {
      */
     @Override
     public void update(Observable o, Object arg) {
+        counter++;
         Job j = (Job) arg;
         paint(j);
         double totalJobs = j.getQueue().getTotalJobs();
-        double completedJobs = WritableGrid.completedJobs;
-        //System.out.println("Total jobs: " + totalJobs);
+        double completedJobs = j.getQueue().getCompletedJobs();
+        double ratio = completedJobs / totalJobs;
+        //System.out.println("Het totale aantal jobs was " + totalJobs);
+        //System.out.println("Het aantal voltooide jobs was " + completedJobs);
+        //System.out.println("De ratio is " + ratio);
+        //System.out.println("De counter staat op " + counter);
+        if (ratio == 1.0) {
+            //all jobs completed
+            progressBar.setProgress(0.0);
+            j.getQueue().resetCompletedJobs();
+        } //System.out.println("Total jobs: " + totalJobs);
         //System.out.println("Completed jobs:" + completedJobs);
-        progressBar.setProgress(completedJobs / totalJobs);
+        else {
+            progressBar.setProgress(ratio);
+        }
+
     }
 
     /**

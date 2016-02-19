@@ -51,6 +51,7 @@ public class Job implements Callable<Job> {
      * The results of the calculation
      */
     private final Color[][] results;
+    
 
     /**
      *
@@ -150,7 +151,7 @@ public class Job implements Callable<Job> {
     public Queue getQueue() {
         return queue;
     }
-
+   
     /**
      *
      * @return the job
