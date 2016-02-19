@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import mandelbrot.Point;
 import mandelbrot.WritableGrid;
+import static java.lang.Math.abs;
 
 /**
  *

@@ -1,13 +1,17 @@
 package worker;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorCompletionService;
 import mandelbrot.Point;
+import mandelbrot.WritableGrid;
 
 /**
  *
  * @author Tom
  */
-public class Queue {
+public class Queue{
 
     /**
      *
@@ -19,13 +23,7 @@ public class Queue {
      *
      * Contains jobs that have to be calculated
      */
-    private final LinkedList<Job> queue;
-
-    /**
-     *
-     * Contains jobs that have been calculated
-     */
-    protected final LinkedList<Job> ready;
+    private final ArrayList <Job> queue;
 
     /**
      *
@@ -35,30 +33,16 @@ public class Queue {
 
     /**
      *
-     * If the last calculated job is added to the ready queue this boolean will
-     * be set to True. This is determined by looking at the at jobsCompleted
-     * when addCompletedJob() is called.
-     */
-    public boolean allJobsAdded = false;
-
-    /**
-     *
-     * Indicates if there are still jobs in the queue
-     */
-    public boolean jobsAvailable = true;
-
-    /**
-     *
-     * Number of completed jobs added to the ready queue
-     */
-    private int jobsCompleted = 0;
-
-    /**
-     *
      * Size of the blocks that will be used to split the grid
      */
-    private static final int chunkSIZE = 5;
+    public static final int chunkSIZE = 5;
 
+    /**
+     * 
+     * The list iterator for the queue
+     */
+    public final Iterator<Job> iterator;
+    
     /**
      *
      * The width of the grid
@@ -72,19 +56,26 @@ public class Queue {
     private final int gridH;
 
     /**
+     * 
+     * The grid
+     */
+    private final WritableGrid grid;
+    /**
      *
      * @param coordinates All the points from the grid that have to be
      * calculated
      * @param gridW The width of the grid
      * @param gridH The height of the grid
+     * @param grid
      */
-    public Queue(Point[][] coordinates, int gridW, int gridH) {
+    public Queue(Point[][] coordinates, int gridW, int gridH, WritableGrid grid) {
+        this.grid = grid;
         this.coordinates = coordinates;
-        queue = new LinkedList<>();
-        ready = new LinkedList<>();
+        queue = new ArrayList <>();
         this.gridW = gridW;
         this.gridH = gridH;
         makeJobs();
+        iterator = queue.iterator();
     }
 
     /**
@@ -94,67 +85,21 @@ public class Queue {
         for (int width = 0; width <= gridW - chunkSIZE; width += chunkSIZE) {
             for (int height = 0; height <= gridH - chunkSIZE; height += chunkSIZE) {
                 Job job = new Job(width, height, new Point[chunkSIZE][chunkSIZE], chunkSIZE, chunkSIZE, this);
-                queue.push(job);
+                queue.add(job);
                 totalJobs++;
             }
         }
     }
-
+    
     /**
-     *
-     * @return The last job from the queue
+     * @return The total number of jobs created
      */
-    public synchronized Job getJob() {
-        while (queue.size() == 0) {
-            try {
-                wait();
-            } catch (InterruptedException ex) {
-            }
-        }
-        Job job = queue.pop();
-        if (queue.size() == 0) {
-            //we just popped the last job from the queue
-            jobsAvailable = false;
-            notifyAll();
-            return job;
-        } else {
-            notifyAll();
-            return job;
-        }
+    public int getTotalJobs(){
+        return totalJobs;
     }
-
-    /**
-     *
-     * @param completedJob The calculated job that will be added to the ready
-     * queue
-     */
-    public synchronized void addCompletedJob(Job completedJob) {
-        if (jobsCompleted == totalJobs - 1) {
-            // this is the last calculated job that will be added to the ready queue
-            ready.push(completedJob);
-            jobsCompleted++;
-            allJobsAdded = true;
-            notifyAll();
-        } else {
-            ready.push(completedJob);
-            jobsCompleted++;
-            notifyAll();
-        }
-    }
-
-    /**
-     *
-     * @return The last calculated job from the ready queue
-     */
-    public synchronized Job getCompletedJob() {
-        while (ready.size() == 0) {
-            try {
-                wait();
-            } catch (InterruptedException ex) {
-            }
-        }
-        Job job = ready.pop();
-        notifyAll();
-        return job;
-    }
+    
+    
 }
+
+   
+

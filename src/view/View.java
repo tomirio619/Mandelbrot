@@ -12,10 +12,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import worker.Job;
 import controller.MouseHandler;
-import static java.lang.String.format;
-import java.text.ParsePosition;
 import java.util.function.UnaryOperator;
-import static javafx.beans.binding.Bindings.format;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -27,8 +24,6 @@ import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 import mandelbrot.Point;
 import mandelbrot.WritableGrid;
-import static java.lang.String.format;
-import static javafx.beans.binding.Bindings.format;
 
 /**
  *
@@ -60,6 +55,12 @@ public class View implements Observer {
      */
     private final WritableGrid grid;
 
+    /**
+     * 
+     * The progress bar
+     */
+    private ProgressBar progressBar;
+    
     /**
      *
      * The scene
@@ -94,7 +95,7 @@ public class View implements Observer {
         scene = new Scene(borderPane);
         image = new ImageView();
         mhandler = new MouseHandler(grid);
-        
+        progressBar = new ProgressBar(0.0);
         /* set up the view which contains the representation of the mandelbrot 
         set
         */
@@ -121,7 +122,7 @@ public class View implements Observer {
         TextField xCoordinateField = new TextField();
         TextField yCoordinateField = new TextField();
         
-        ProgressBar progressBar = new ProgressBar(0.0);
+        
         Button zoomButton = new Button("Zoom");
         zoomButton.setId("zoomButton");
         zoomButton.setOnAction(new ActionEventHandler(grid));
@@ -237,6 +238,9 @@ public class View implements Observer {
     public void update(Observable o, Object arg) {
         Job j = (Job) arg;
         paint(j);
+        //System.out.println("Total jobs: " + totalJobs);
+        //System.out.println("Completed jobs:" + completedJobs);
+        //progressBar.setProgress(completedJobs/totalJobs);
     }
 
     /**

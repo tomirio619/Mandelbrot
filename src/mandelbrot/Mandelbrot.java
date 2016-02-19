@@ -17,14 +17,14 @@ public class Mandelbrot extends Application {
          * The width of the screen, chunkSIZE in queue must be a divisor of
          * this value.
          */
-        int width = 800;
+        int width = 1000;
 
         /**
          *
          * The height of the screen, chunkSIZE in queue must be a divisor of
          * this value
          */
-        int height = 800;
+        int height = 1000;
 
         WritableGrid grid = new WritableGrid(width, height);
         View view = new View(primaryStage, grid, width, height);

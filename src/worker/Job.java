@@ -1,5 +1,6 @@
 package worker;
 
+import java.util.concurrent.Callable;
 import javafx.scene.paint.Color;
 import mandelbrot.Point;
 
@@ -7,7 +8,7 @@ import mandelbrot.Point;
  *
  * @author Tom
  */
-public class Job {
+public class Job implements Callable<Job> {
 
     /**
      *
@@ -140,5 +141,15 @@ public class Job {
      */
     public Color getResult(int width, int height) {
         return results[width][height];
+    }
+    
+    public Queue getQueue(){
+        return queue;
+    }
+
+    @Override
+    public Job call() throws Exception {
+        doJob();
+        return this;
     }
 }
